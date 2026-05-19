@@ -29,11 +29,11 @@ header{position:sticky;top:0;z-index:100;display:flex;align-items:center;justify
 .hero{text-align:center;padding:3rem 2rem 1.5rem;position:relative;}
 .hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 50% 60% at 50% 30%,rgba(180,74,28,.07) 0%,transparent 70%);}
 .hero-eyebrow{font-family:'Barlow Condensed',sans-serif;font-size:.6rem;letter-spacing:.4em;text-transform:uppercase;color:var(--rust);margin-bottom:.6rem;position:relative;}
-.hero-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(3rem,9vw,6rem);letter-spacing:.04em;line-height:.9;position:relative;margin-bottom:.5rem;}
+.hero-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(1.5rem,4.5vw,3rem);letter-spacing:.04em;line-height:.9;position:relative;margin-bottom:.5rem;}
 .hero-title span{color:var(--gold);}
 .gold-rule{width:36px;height:1px;background:var(--gold);margin:1rem auto;}
 .hero-sub{font-family:'Barlow Condensed',sans-serif;font-size:.68rem;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);position:relative;}
-.hero-logo{height:80px;width:auto;margin-bottom:1rem;opacity:.9;position:relative;}
+.hero-logo{height:240px;width:auto;margin-bottom:.5rem;opacity:.9;position:relative;}
 
 /* controls bar */
 .controls-bar{display:flex;align-items:center;justify-content:center;gap:1rem;padding:1.25rem 2rem;border-bottom:1px solid var(--border);}
@@ -111,7 +111,7 @@ header{position:sticky;top:0;z-index:100;display:flex;align-items:center;justify
   transition:width .4s ease, height .4s ease;
 }
 .chart-row.active-row .row-cover{
-  width:120px;height:120px;
+  width:180px;height:180px;
 }
 .row-text{min-width:0;flex:1;}
 .row-title{font-family:'Bebas Neue',sans-serif;font-size:1.05rem;letter-spacing:.06em;color:var(--cream);line-height:1;margin-bottom:.2rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;transition:filter .4s;}
@@ -121,6 +121,9 @@ header{position:sticky;top:0;z-index:100;display:flex;align-items:center;justify
 
 /* casey label on active row */
 .casey-label{font-family:'Barlow Condensed',sans-serif;font-size:.58rem;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);display:none;}
+.inline-next{font-family:'Barlow Condensed',sans-serif;font-size:.65rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;background:var(--rust);color:var(--cream);border:none;padding:.35rem .85rem;cursor:pointer;display:none;transition:background .2s;margin-left:.5rem;}
+.inline-next:hover{background:#d05520;}
+.inline-next.visible{display:inline-block;}
 .chart-row.active-row .casey-label.visible{display:block;}
 
 /* bottom player bar */
@@ -263,6 +266,7 @@ function buildChart(){
           <div class="row-album">${e.album||''}</div>
           <div class="row-meta">
             <span class="casey-label" id="casey-${di}">Countdown Casey...</span>
+            <button class="inline-next" id="inline-next-${di}" onclick="nextSong()">Next Song ▶</button>
           </div>
         </div>
       </div>
@@ -298,6 +302,12 @@ function startCountdown(){
 function playIndex(di){
   const entry = displayOrder[di];
   if(!entry) return;
+
+  // Hide previous inline next button
+  if(currentDIdx !== null){
+    const prevInline = document.getElementById('inline-next-'+currentDIdx);
+    if(prevInline) prevInline.classList.remove('visible');
+  }
 
   // Deactivate previous
   if(currentDIdx !== null){
@@ -350,7 +360,11 @@ function playSong(di){
     audio.src = entry.audioFile;
     audio.play().catch(()=>{});
     // Enable Next after 5 seconds
-    nextTimer = setTimeout(()=>{ btnNext.disabled = false; }, 5000);
+    nextTimer = setTimeout(()=>{
+      btnNext.disabled = false;
+      const inlineBtn = document.getElementById('inline-next-'+di);
+      if(inlineBtn) inlineBtn.classList.add('visible');
+    }, 5000);
   }
 }
 
