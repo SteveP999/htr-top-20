@@ -101,8 +101,14 @@ var YTURL = 'https://www.youtube.com/watch?v=Qs30bKkYx5M';
 var LOGO  = 'https://raw.githubusercontent.com/SteveP999/hello-texas-records/main/htr-logo.png';
 var chart = [], display = [], cur = -1, player = null, poll = null;
 
+var playerReady = false;
 function onYouTubeIframeAPIReady() {
-  player = new YT.Player('yt-player', { events: { onStateChange: stateChange } });
+  player = new YT.Player('yt-player', {
+    events: {
+      onReady: function() { playerReady = true; },
+      onStateChange: stateChange
+    }
+  });
 }
 function stateChange(e) { if (e.data === 1) startPoll(); else stopPoll(); }
 function startPoll() { stopPoll(); poll = setInterval(sync, 1000); }
@@ -167,12 +173,14 @@ function setActive(di) {
 }
 
 function jumpTo(di) {
-  if (!player || typeof player.seekTo !== 'function') {
-    window.open(YTURL + '&t=' + display[di].youtubeTimestamp + 's', '_blank');
-    return;
+  if (playerReady && player && typeof player.seekTo === 'function') {
+    player.seekTo(display[di].youtubeTimestamp, true);
+    player.playVideo();
+  } else {
+    // Player not ready yet - just update the iframe src with timestamp
+    var iframe = document.getElementById('yt-player');
+    iframe.src = 'https://www.youtube.com/embed/Qs30bKkYx5M?enablejsapi=1&origin=https://htr-top-20.hellotexasrecords.com&rel=0&autoplay=1&start=' + display[di].youtubeTimestamp;
   }
-  player.seekTo(display[di].youtubeTimestamp, true);
-  player.playVideo();
   setActive(di);
 }
 function skipToNext() { var n = cur + 1; if (n < display.length) jumpTo(n); }
