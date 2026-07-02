@@ -157,6 +157,24 @@ audio{display:none;}
   .chart-row.active-row .row-cover{width:80px;height:80px;}
   .bar-progress{max-width:100px;}
 }
+
+/* YouTube banner */
+.yt-banner{display:none;align-items:center;justify-content:center;gap:1.2rem;flex-wrap:wrap;
+  background:linear-gradient(135deg,rgba(196,26,26,0.12),rgba(196,26,26,0.04));
+  border:1px solid rgba(196,26,26,0.3);border-left:3px solid #C41A1A;
+  padding:1rem 2rem;margin:0 auto 1rem;max-width:900px;cursor:pointer;
+  transition:background .2s;}
+.yt-banner:hover{background:linear-gradient(135deg,rgba(196,26,26,0.2),rgba(196,26,26,0.08));}
+.yt-banner-text{font-family:'Barlow Condensed',sans-serif;font-size:.75rem;letter-spacing:.2em;
+  text-transform:uppercase;color:var(--tan);}
+.yt-banner-text strong{font-family:'Bebas Neue',sans-serif;font-size:1.1rem;letter-spacing:.08em;
+  color:var(--cream);display:block;margin-bottom:.15rem;}
+.yt-banner-btn{display:flex;align-items:center;gap:.5rem;background:#C41A1A;
+  font-family:'Bebas Neue',sans-serif;font-size:1rem;letter-spacing:.12em;
+  color:#fff;padding:.55rem 1.4rem;border:none;cursor:pointer;
+  transition:background .2s;white-space:nowrap;}
+.yt-banner-btn:hover{background:#d42020;}
+.yt-banner-btn svg{flex-shrink:0;}
 </style>
 </head>
 <body>
@@ -177,6 +195,18 @@ audio{display:none;}
 <div class="controls-bar">
   <button class="ctrl-btn primary" id="btn-start" onclick="startCountdown()">▶ Start Countdown</button>
   <button class="ctrl-btn" id="btn-show-all" onclick="showAll()">Show All Songs</button>
+</div>
+
+<!-- YouTube banner — shown when TOP20_YOUTUBE_URL is set -->
+<div class="yt-banner" id="yt-banner" onclick="window.open(TOP20_YOUTUBE_URL,'_blank')">
+  <div class="yt-banner-text">
+    <strong>HTR Top 20 — July 2026</strong>
+    Watch the full countdown with host commentary &amp; commercials
+  </div>
+  <button class="yt-banner-btn">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M21.8 8s-.2-1.4-.8-2c-.8-.8-1.6-.8-2-.9C16.4 5 12 5 12 5s-4.4 0-7 .1c-.4.1-1.2.1-2 .9-.6.6-.8 2-.8 2S2 9.6 2 11.2v1.5c0 1.6.2 3.2.2 3.2s.2 1.4.8 2c.8.8 1.8.8 2.2.8C6.4 19 12 19 12 19s4.4 0 7-.1c.4-.1 1.2-.1 2-.9.6-.6.8-2 .8-2s.2-1.6.2-3.2v-1.5C22 9.6 21.8 8 21.8 8zM10 15V9l5.2 3-5.2 3z"/></svg>
+    Watch on YouTube
+  </button>
 </div>
 
 <div class="chart-wrap" id="chart-wrap">
@@ -202,6 +232,9 @@ audio{display:none;}
 <audio id="audio"></audio>
 
 <script>
+// ── YouTube video URL — set to '' to hide the banner ─────────
+const TOP20_YOUTUBE_URL = 'PASTE_YOUTUBE_URL_HERE';
+
 const audio     = document.getElementById('audio');
 const playerBar = document.getElementById('player-bar');
 const btnNext   = document.getElementById('btn-next');
@@ -230,6 +263,10 @@ fetch('chart.json?cb='+Date.now())
     chart        = data;
     displayOrder = [...data].reverse(); // pos 20 first
     buildChart();
+    // Show YouTube banner if URL is set
+    if(TOP20_YOUTUBE_URL && TOP20_YOUTUBE_URL !== 'PASTE_YOUTUBE_URL_HERE'){
+      document.getElementById('yt-banner').style.display = 'flex';
+    }
     const d = data[0]?.chartDate||'';
     document.getElementById('hdr-date').innerHTML = d?fmt(d):'';
     document.getElementById('hero-sub').textContent = d?fmt(d):'May 2026';
